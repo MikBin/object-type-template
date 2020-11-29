@@ -33,6 +33,7 @@ type JsonCompatible<T> = {
     : JsonCompatible<T[P]>;
 };
 
+//#4
 export type SerializableScalar = string | number | boolean | null;
 
 export type SerializableObject = {
@@ -44,8 +45,9 @@ export type SerializableArray = Array<SerializableScalar | SerializableObject | 
 export type Serializable = SerializableScalar | SerializableObject | SerializableArray;
 
 
+//#5
 
-type primitive = null
+export type primitive = null
     | boolean
     | number
     | string
@@ -94,3 +96,12 @@ export interface ObjectTemplate {
     value: ValueTemplate;
     optional: boolean;
 }
+
+
+/**
+ * @TODO roadmap
+ * clear code
+ * create git repo
+ * create npm repo
+ * make tests
+ */
