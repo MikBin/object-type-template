@@ -7,7 +7,7 @@ const objectTemplateFactory = (): ObjectTemplate => ({ types: [], value: valueTe
 //aux functions
 const getTemplateValue = (template: ObjectTemplate, idx = 0) => Array.isArray(template.value) ? template.value[idx] : template.value;
 
-const mergeTemplates = exports.mergeTemplate = (templateA: ObjectTemplate, templateB: ObjectTemplate) => {
+export const mergeTemplates = (templateA: ObjectTemplate, templateB: ObjectTemplate) => {
 
     /**if always present ==> not optional else optional=true */
     const aTypes = templateA.types;
@@ -78,14 +78,15 @@ const mergeTemplates = exports.mergeTemplate = (templateA: ObjectTemplate, templ
     return res;
 }
 
-const intersectTemplates = exports.intersectTemplates = (templatesList: ObjectTemplate[]) => { }
+export const intersectTemplates = (templatesList: ObjectTemplate[]) => { }
 
-const mergeManyTemplates = exports.mergeTemplates = (_templatesList: ObjectTemplate[]) => {
+export const mergeManyTemplates = (_templatesList: ObjectTemplate[]) => {
 
     const templatesList = [..._templatesList];
     let last = templatesList.pop();
-    console.log(templatesList);
-    return templatesList.reduce((prev, curr, idx) => mergeTemplates(curr, <ObjectTemplate>prev), last);
+    // console.log(templatesList);
+    if (templatesList.length <= 0) return last;
+    return templatesList.reduce((prev, curr) => mergeTemplates(curr, <ObjectTemplate>prev), last);
 }
 
 /**@TODO functions must be skipped or an error must be thrown same holds for Symbols
@@ -96,7 +97,7 @@ const mergeManyTemplates = exports.mergeTemplates = (_templatesList: ObjectTempl
  @TODO pass propcounter???
  @TODO use a set to catch curcular references
  */
-const objectToTemplate = exports.objectToTemplate = (source: object | Primitive/** arrayTemplateMode:merge/intersect */) => {
+export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode:merge/intersect */) => {
 
     /**
      * other json to typescript:
@@ -127,6 +128,7 @@ const objectToTemplate = exports.objectToTemplate = (source: object | Primitive/
         const entries = Object.entries(source);
         res.types = ["object"];
         res.value = valueTemplateFactory();
+        res.value.object = {};
         const SOURCE_VALUE = res.value.object;
 
         entries.forEach(([prop, propValue], idx) => {
