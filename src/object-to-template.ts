@@ -13,7 +13,7 @@ export const mergeTemplates = (templateA: ObjectTemplate, templateB: ObjectTempl
     const aTypes = templateA.types;
     const bTypes = templateB.types;
     const types = _.union(templateA.types, templateB.types);
-    const optional = templateA.optional || templateB.optional; //in intersection this props wont exists
+    const optional = templateA.optional || templateB.optional || false; //in intersection this props wont exists
     let value: ValueTemplate = valueTemplateFactory();
 
     const aHasObject = aTypes.includes('object');
@@ -34,11 +34,15 @@ export const mergeTemplates = (templateA: ObjectTemplate, templateB: ObjectTempl
         const bKeys: string[] = Object.keys(<{}>bValue.object);
 
         aKeys.forEach((k, i) => {
-            if (Reflect.has(<MapOfObjectTemplate>bValue.object, k)) {
-                obj[k] = mergeTemplates(
-                    Reflect.get(<MapOfObjectTemplate>aValue.object, k),
-                    Reflect.get(<MapOfObjectTemplate>bValue.object, k));
-                obj[k].optional = false;
+            const bObject = <MapOfObjectTemplate>bValue.object;
+            const aObject = <MapOfObjectTemplate>aValue.object;
+
+            if (Reflect.has(bObject, k)) {
+
+                const merged: ObjectTemplate = obj[k] = mergeTemplates(Reflect.get(bObject, k), Reflect.get(aObject, k));
+                //@ts-ignore
+                merged.optional = bObject.optional || aObject.optional || false;
+
             } else {
                 obj[k] = Reflect.get(<MapOfObjectTemplate>aValue.object, k);
                 obj[k].optional = true;
@@ -78,13 +82,13 @@ export const mergeTemplates = (templateA: ObjectTemplate, templateB: ObjectTempl
     return res;
 }
 
-export const intersectTemplates = (templatesList: ObjectTemplate[]) => { }
+export const intersectTemplates = (templateA: ObjectTemplate, templateB: ObjectTemplate) => { }
+
+export const intersectManyTemplates = (_templatesList: ObjectTemplate[]) => { }
 
 export const mergeManyTemplates = (_templatesList: ObjectTemplate[]) => {
-
     const templatesList = [..._templatesList];
     let last = templatesList.pop();
-    // console.log(templatesList);
     if (templatesList.length <= 0) return last;
     return templatesList.reduce((prev, curr) => mergeTemplates(curr, <ObjectTemplate>prev), last);
 }

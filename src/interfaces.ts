@@ -91,6 +91,9 @@ export interface ValueTemplate {
     array: ObjectTemplate | null
 }
 
+/**@TODO sometimes and array could have some index with special structure ex an header at index 0
+ * so when types has only array but value contains object too the indexes are for special cases of the array
+ */
 export interface ObjectTemplate {
     types: string[];
     value: ValueTemplate;
@@ -101,7 +104,6 @@ export interface ObjectTemplate {
 /**
  * @TODO roadmap
  * clear code
- * create git repo
  * create npm repo
  * make tests
  */

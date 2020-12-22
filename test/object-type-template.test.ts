@@ -1,12 +1,14 @@
 import { objectToTemplate } from "../src/object-to-template"
-import {inspect} from "util";
+import { objectTemplateSimilarity } from "../src/template-check";
+
+import { inspect } from "util";
 /**
  * object to template full test
  */
 describe("objectToTEmplate test", () => {
 
   const testSource = {
-    " ar": [1, 2, 3, "stella"],
+    "ar": [1, 2, 3, "stella"],
     "n": 1,
     "c": "c",
     "o": {
@@ -15,20 +17,20 @@ describe("objectToTEmplate test", () => {
     "mixedArr": [{ "a": true, "b": "optional" }, null, { "a": 11 }, { "a": 12, "b": false }, [23, 45, "sss"], "dfg", "34.456"]
   }
 
-  const expectedRes = {
-    types: [ 'object' ],
+  const expectedTemplateRes = {
+    types: ['object'],
     value: {
       primitive: null,
       object: {
-        ' ar': {
-          types: [ 'array' ],
+        'ar': {
+          types: ['array'],
           value: {
             primitive: null,
             object: null,
             array: {
-              types: [ 'number', 'string' ],
+              types: ['number', 'string'],
               value: {
-                primitive: [ 'number', 'string' ],
+                primitive: ['number', 'string'],
                 object: null,
                 array: null
               },
@@ -38,23 +40,23 @@ describe("objectToTEmplate test", () => {
           optional: false
         },
         n: {
-          types: [ 'number' ],
-          value: { primitive: [ 'number' ], object: null, array: null },
+          types: ['number'],
+          value: { primitive: ['number'], object: null, array: null },
           optional: false
         },
         c: {
-          types: [ 'string' ],
-          value: { primitive: [ 'string' ], object: null, array: null },
+          types: ['string'],
+          value: { primitive: ['string'], object: null, array: null },
           optional: false
         },
         o: {
-          types: [ 'object' ],
+          types: ['object'],
           value: {
             primitive: null,
             object: {
               test: {
-                types: [ 'string' ],
-                value: { primitive: [ 'string' ], object: null, array: null },
+                types: ['string'],
+                value: { primitive: ['string'], object: null, array: null },
                 optional: false
               }
             },
@@ -63,38 +65,38 @@ describe("objectToTEmplate test", () => {
           optional: false
         },
         mixedArr: {
-          types: [ 'array' ],
+          types: ['array'],
           value: {
             primitive: null,
             object: null,
             array: {
-              types: [ 'string', 'array', 'object', 'null', 'number' ],
+              types: ['string', 'array', 'object', 'null', 'number'],
               value: {
-                primitive: [ 'string', 'null', 'number' ],
+                primitive: ['string', 'null', 'number'],
                 object: {
                   a: {
-                    types: [ 'number', 'boolean' ],
+                    types: ['number', 'boolean'],
                     value: {
-                      primitive: [ 'number', 'boolean' ],
+                      primitive: ['number', 'boolean'],
                       object: null,
                       array: null
                     },
                     optional: false
                   },
                   b: {
-                    types: [ 'boolean', 'string' ],
+                    types: ['boolean', 'string'],
                     value: {
-                      primitive: [ 'boolean', 'string' ],
+                      primitive: ['boolean', 'string'],
                       object: null,
                       array: null
                     },
-                    optional: false
+                    optional: true
                   }
                 },
                 array: {
-                  types: [ 'number', 'string' ],
+                  types: ['number', 'string'],
                   value: {
-                    primitive: [ 'number', 'string' ],
+                    primitive: ['number', 'string'],
                     object: null,
                     array: null
                   },
@@ -112,10 +114,17 @@ describe("objectToTEmplate test", () => {
     optional: false
   };
 
+
   it("works", () => {
     const res = objectToTemplate(testSource);
-   
-    expect(res).toEqual(expectedRes);
+
+    expect(res).toEqual(expectedTemplateRes);
+  });
+
+  it("has no error in template check", () => {
+    const counter = objectTemplateSimilarity(testSource, expectedTemplateRes);
+    console.log(counter);
+    expect(true).toBeTruthy();
   })
 
 
