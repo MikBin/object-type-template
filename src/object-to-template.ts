@@ -1,6 +1,8 @@
 import { matchNumber } from './utilities';
-import * as _ from 'lodash';
+import { primitiveArrayUnion as union } from './utilities';
+
 import { ObjectTemplate, ValueTemplate, MapOfObjectTemplate, Primitive } from './interfaces';
+
 
 const valueTemplateFactory = (): ValueTemplate => ({ primitive: null, object: null, array: null });
 const objectTemplateFactory = (): ObjectTemplate => ({ types: [], value: valueTemplateFactory(), optional: false });
@@ -12,7 +14,7 @@ export const mergeTemplates = (templateA: ObjectTemplate, templateB: ObjectTempl
     /**if always present ==> not optional else optional=true */
     const aTypes = templateA.types;
     const bTypes = templateB.types;
-    const types = _.union(templateA.types, templateB.types);
+    const types = <string[]>union(templateA.types, templateB.types);
     const optional = templateA.optional || templateB.optional || false; //in intersection this props wont exists
     let value: ValueTemplate = valueTemplateFactory();
 
@@ -40,8 +42,8 @@ export const mergeTemplates = (templateA: ObjectTemplate, templateB: ObjectTempl
             if (Reflect.has(bObject, k)) {
 
                 const merged: ObjectTemplate = obj[k] = mergeTemplates(Reflect.get(bObject, k), Reflect.get(aObject, k));
-                //@ts-ignore
-                merged.optional = bObject.optional || aObject.optional || false;
+
+                merged.optional = bObject[k].optional || aObject[k].optional || false;
 
             } else {
                 obj[k] = Reflect.get(<MapOfObjectTemplate>aValue.object, k);
@@ -72,7 +74,7 @@ export const mergeTemplates = (templateA: ObjectTemplate, templateB: ObjectTempl
 
     //primitive must be merged anyway
     if (aValue.primitive && bValue.primitive) {
-        value.primitive = _.union(aValue.primitive, bValue.primitive);
+        value.primitive = <string[]>union(aValue.primitive, bValue.primitive);
     } else {
         value.primitive = aValue.primitive || bValue.primitive || null;
     }
