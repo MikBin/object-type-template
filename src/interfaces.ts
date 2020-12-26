@@ -85,13 +85,17 @@ export type IsJsonable<T> =
 //@TODO use StringTMap
 export type MapOfObjectTemplate = { [prop: string]: ObjectTemplate };
 
+/**@TODO add objectMap to represent a map of similar templates? 
+ * or just usa flag in that case object is going to be an objectTemplate or a map with single value "objectMap":
+*/
 export interface ValueTemplate {
     primitive: Array<string> | null;
-    object: MapOfObjectTemplate | null;
-    array: ObjectTemplate | null
+    object: MapOfObjectTemplate | ObjectTemplate | null;
+    array: ObjectTemplate | null;
+    objectMap?: boolean;
 }
 
-/**@TODO sometimes and array could have some index with special structure ex an header at index 0
+/**@TODO sometimes an array could have some index with special structure ex an header at index 0
  * so when types has only array but value contains object too the indexes are for special cases of the array
  */
 export interface ObjectTemplate {

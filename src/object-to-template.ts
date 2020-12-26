@@ -9,6 +9,7 @@ const objectTemplateFactory = (): ObjectTemplate => ({ types: [], value: valueTe
 //aux functions
 const getTemplateValue = (template: ObjectTemplate, idx = 0) => Array.isArray(template.value) ? template.value[idx] : template.value;
 
+
 export const mergeTemplates = (templateA: ObjectTemplate, templateB: ObjectTemplate) => {
 
     /**if always present ==> not optional else optional=true */
@@ -131,6 +132,7 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
 
     } else if (source !== null && sourceType === "object") {
         /**SOURCE IS OBJECT */
+
         const entries = Object.entries(source);
         res.types = ["object"];
         res.value = valueTemplateFactory();
@@ -141,6 +143,10 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
             const propType = typeof propValue;
             Reflect.set(<MapOfObjectTemplate>SOURCE_VALUE, prop, objectToTemplate(propValue));
         });
+        /**@TODO in object case check if all entries are similar --> in this case use stringTMap
+         * the first check is on types, they have to be all primitive or array or object mixes in this case are not accepted
+         * an exact match could be performed using JSON.stringify
+          */
 
     } else if (source === null) {
         //an object can be null
@@ -153,6 +159,11 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
         res.types = [_sourceType];
         res.value.primitive = [_sourceType];
     }
-
+    res.types.sort();
     return res;
 }
+
+/**@TODO  
+ * keep a list of low level templeates (ones that have no nested objects)
+ * keep template and stringified version
+ */
