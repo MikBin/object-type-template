@@ -1,4 +1,4 @@
-import { primitive } from "./interfaces";
+import { ObjectTemplate, primitive } from "./interfaces";
 
 export const rgNumber = new RegExp(/^[0-9.,]*$/);
 export const rgLettersOnly = new RegExp(/'[A-ZÀ-ÚÄ-Ü\s]+'/);
@@ -32,4 +32,32 @@ export const sortObjectKeys = (obj: object) => {
     Object.values(obj).sort((a, b) => { return a[0] > b[0] ? 1 : -1 })
         .forEach(([key, value]: [string, any]) => { res[key] = value; });
     return res;
+}
+
+export const objectTemplateIsPrimitive = (template: ObjectTemplate): boolean => {
+    const value = template.value;
+    return !!value.primitive && !value.object && !value.array;
+}
+
+/** means it is primitive only or all values are primitive  */
+export const objectTemplateIsLeaf = (template: ObjectTemplate): boolean => {
+
+    const isPrimitive = objectTemplateIsPrimitive(template);
+    if (isPrimitive) return true;
+
+    const isArrayPrimitive = template.value.array && objectTemplateIsPrimitive(template.value.array);
+    if (isArrayPrimitive) return true;
+
+    const isObjectPrimitive = template.value.object && Object.values(template.value.object)
+        .reduce((res: boolean, _temp: ObjectTemplate) => { return objectTemplateIsPrimitive(_temp) && res; }, true);
+
+    if (isObjectPrimitive) return true;
+
+    return false;
+}
+
+export const entriesSorterFactory = (order: number = 1) => {
+    return (A: [string, any], B: [string, any]): number => {
+        return order * (A[0] >= B[0] ? 1 : -1);
+    }
 }

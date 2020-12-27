@@ -90,9 +90,9 @@ export type MapOfObjectTemplate = { [prop: string]: ObjectTemplate };
 */
 export interface ValueTemplate {
     primitive: Array<string> | null;
-    object: MapOfObjectTemplate | ObjectTemplate | null;
+    object: MapOfObjectTemplate | null;
     array: ObjectTemplate | null;
-    objectMap?: boolean;
+    isObjectMap?: boolean;
 }
 
 /**@TODO sometimes an array could have some index with special structure ex an header at index 0
@@ -104,6 +104,7 @@ export interface ObjectTemplate {
     optional: boolean;
 }
 
+export const OBJECT_MAP_PROP = "__ObjectMap";
 
 /**
  * @TODO roadmap

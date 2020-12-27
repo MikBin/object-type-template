@@ -7,7 +7,7 @@
  */
 
 import { MapOfObjectTemplate, ObjectTemplate } from "./interfaces";
-import { primitiveArrayIntersection, primitiveArrayUnion } from "./utilities";
+import { entriesSorterFactory, primitiveArrayIntersection, primitiveArrayUnion } from "./utilities";
 
 export const sameTypes = (typesA: string[], typesB: string[]): boolean => {
     return typesA.reduce((res: boolean, type: string) => { return res && typesB.includes(type); }, true);
@@ -20,6 +20,9 @@ export const typesMatchCount = (typesA: string[], typesB: string[]): number => {
 /**when a series of templates are very similar then merge to get just one type
  * in case of object can be used to store a stringTMap type 
  */
+
+
+
 export const templateSimilarity = (templateA: ObjectTemplate, templateB: ObjectTemplate): { total: number, match: number } => {
 
     const counter = { total: Math.max(templateA.types.length, templateB.types.length), match: 0 };
@@ -30,6 +33,11 @@ export const templateSimilarity = (templateA: ObjectTemplate, templateB: ObjectT
     //count array and object subtype simlarity
     const hasObject = !!templateA.value.object;
     const hasArray = !!templateA.value.array;
+    const justOneObjectMap = templateA.value.isObjectMap || templateB.value.isObjectMap;
+    const bothObjectMap = templateA.value.isObjectMap && templateB.value.isObjectMap;
+
+
+    /**count keys of non object map and add to total */
 
 
     if (hasObject) {
@@ -37,21 +45,24 @@ export const templateSimilarity = (templateA: ObjectTemplate, templateB: ObjectT
         const objectB = <MapOfObjectTemplate>templateB.value.object;
         const keysA = Object.keys(objectA);
         const keysB = Object.keys(objectB);
-        const keysDiff = [...keysA.filter(k => !Reflect.has(objectB, k)), ...keysB.filter(k => !Reflect.has(objectA, k))];
-        const keysCommon = <string[]>primitiveArrayIntersection(keysA, keysB);
-        const maxKeys = Math.max(keysA.length, keysB.length);
-        const minKeys = Math.min(keysA.length, keysB.length);
-        let missingKeyCount = 0;
 
-        keysCommon.forEach((key, idx) => {
+        if (justOneObjectMap) {
+            counter.total += Math.max(keysA.length, keysB.length);
+        } else {
+            const keysDiff = [...keysA.filter(k => !Reflect.has(objectB, k)), ...keysB.filter(k => !Reflect.has(objectA, k))];
+            const keysCommon = <string[]>primitiveArrayIntersection(keysA, keysB);
 
-            const { match, total } = templateSimilarity(<ObjectTemplate>objectB[key], <ObjectTemplate>objectA[key]);
-            counter.match += match;
-            counter.total += total;
+            keysCommon.forEach((key, idx) => {
 
-        });
+                const { match, total } = templateSimilarity(<ObjectTemplate>objectB[key], <ObjectTemplate>objectA[key]);
+                counter.match += match;
+                counter.total += total;
 
-        counter.total += keysDiff.length;
+            });
+
+            counter.total += keysDiff.length;
+        }
+
     }
 
     if (hasArray) {

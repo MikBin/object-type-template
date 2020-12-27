@@ -46,12 +46,64 @@ describe("objectToTEmplate test", () => {
           "types": ["object"],
           "value": {
             "primitive": null, "object": { "test": { "types": ["string"], "value": { "primitive": ["string"], "object": null, "array": null }, "optional": false } }, "array": null
+          },
+          "optional": false
+        },
+        "mixedArr": {
+          "types": ["array"],
+          "value": {
+            "primitive": null,
+            "object": null,
+            "array": {
+              "types": ["array", "null", "number", "object", "string"],
+              "value": {
+                "primitive": ["null", "number", "string"],
+                "object": {
+                  "a": {
+                    "types": ["boolean", "number"],
+                    "value": {
+                      "primitive": ["boolean", "number"],
+                      "object": null,
+                       "array": null
+                    },
+                    "optional": false
+                  },
+                  "b": {
+                    "types": ["boolean", "string"],
+                    "value": {
+                      "primitive": ["boolean", "string"],
+                      "object": null,
+                      "array": null
+                    },
+                    "optional": true
+                  }
+                }, "array": {
+                  "types": ["number", "string"],
+                  "value": {
+                    "primitive": ["number", "string"],
+                    "object": null,
+                    "array": null
+                  },
+                  "optional": false
+                }
+              }, "optional": false
+            }
           }, "optional": false
-        }, "mixedArr": { "types": ["array"], "value": { "primitive": null, "object": null, "array": { "types": ["array", "null", "number", "object", "string"], "value": { "primitive": ["null", "number", "string"], "object": { "a": { "types": ["boolean", "number"], "value": { "primitive": ["boolean", "number"], "object": null, "array": null }, "optional": false }, "b": { "types": ["boolean", "string"], "value": { "primitive": ["boolean", "string"], "object": null, "array": null }, "optional": true } }, "array": { "types": ["number", "string"], "value": { "primitive": ["number", "string"], "object": null, "array": null }, "optional": false } }, "optional": false } }, "optional": false }
-      }, "array": null
+        }
+      },
+      "array": null
     }, "optional": false
   };
 
+  const objectMapTestSource = {
+    "sdfa": { a: 1, b: "ciaogbjh" },
+    "sdfdfgdfa": { a: 13, b: "cifgfghao" },
+    "strtdfa": { a: -1, b: "ciahjo" },
+    "uutysdfa": { a: -21, b: "cihjao" },
+    "esressdfa": { a: 341, b: "ciakjhkjo" },
+    "sd876fa": { a: 81, b: "ciahkjho" },
+    "78688sdfa": { a: 18, b: "ciiyiuao" },
+  };
 
   it("works", () => {
     const res = objectToTemplate(testSource);
@@ -63,5 +115,10 @@ describe("objectToTEmplate test", () => {
     expect(true).toBeTruthy();
   })
 
+  it("recognize object map collection of equals object", () => {
+
+    const res = objectToTemplate(objectMapTestSource);
+    expect(res.value.isObjectMap).toBeTruthy();
+  })
 
 })

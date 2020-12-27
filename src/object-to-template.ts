@@ -1,14 +1,21 @@
-import { matchNumber } from './utilities';
+/**
+ * other json to typescript:
+ * https://jvilk.com/MakeTypes/
+ * https://github.com/jvilk/maketypes
+ * http://json2ts.com/
+ * get idea for naming
+ */
+
+import { entriesSorterFactory, matchNumber } from './utilities';
 import { primitiveArrayUnion as union } from './utilities';
 
-import { ObjectTemplate, ValueTemplate, MapOfObjectTemplate, Primitive } from './interfaces';
+import { ObjectTemplate, ValueTemplate, MapOfObjectTemplate, Primitive, OBJECT_MAP_PROP } from './interfaces';
 
 
 const valueTemplateFactory = (): ValueTemplate => ({ primitive: null, object: null, array: null });
 const objectTemplateFactory = (): ObjectTemplate => ({ types: [], value: valueTemplateFactory(), optional: false });
 //aux functions
 const getTemplateValue = (template: ObjectTemplate, idx = 0) => Array.isArray(template.value) ? template.value[idx] : template.value;
-
 
 export const mergeTemplates = (templateA: ObjectTemplate, templateB: ObjectTemplate) => {
 
@@ -97,22 +104,17 @@ export const mergeManyTemplates = (_templatesList: ObjectTemplate[]) => {
 }
 
 /**@TODO functions must be skipped or an error must be thrown same holds for Symbols
- * ==> number string boolean object array null
+ * this situation should not accur as its supposted to receive json parsed data
  */
-/**
- each one of the above enrty could be null if the corresponding type is not present
- @TODO pass propcounter???
- @TODO use a set to catch curcular references
- */
-export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode:merge/intersect */) => {
 
-    /**
-     * other json to typescript:
-     * https://jvilk.com/MakeTypes/
-     * https://github.com/jvilk/maketypes
-     * http://json2ts.com/
-     * get idea for naming
-     */
+/**
+ @TODO use a set to catch curcular references???... if the input is result of JSON.parse circular dependecies should not accur
+ */
+
+const entriesSorter = entriesSorterFactory();
+
+export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode:merge/intersect */, threshold: number = 5) => {
+
     const res = objectTemplateFactory();
 
     const sourceType: string = typeof source;
@@ -132,12 +134,11 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
 
     } else if (source !== null && sourceType === "object") {
         /**SOURCE IS OBJECT */
-
-        const entries = Object.entries(source);
+        const entries = Object.entries(source).sort(entriesSorter);
         res.types = ["object"];
         res.value = valueTemplateFactory();
         res.value.object = {};
-        const SOURCE_VALUE = res.value.object;
+        const SOURCE_VALUE = {};
 
         entries.forEach(([prop, propValue], idx) => {
             const propType = typeof propValue;
@@ -147,6 +148,18 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
          * the first check is on types, they have to be all primitive or array or object mixes in this case are not accepted
          * an exact match could be performed using JSON.stringify
           */
+
+        if (entries.length > threshold) {
+            const sourceValueTemplates = Object.values(SOURCE_VALUE);
+            const templateStrings: string[] = sourceValueTemplates.map(v => JSON.stringify(v)).sort();
+            let l = templateStrings.length, equals = 0;
+            for (let i = 1; i < l; i++) if (templateStrings[i] === templateStrings[i - 1]) equals++;
+            const allEquals: boolean = equals === l - 1;
+            res.value.isObjectMap = allEquals;
+            res.value.object[OBJECT_MAP_PROP] = <ObjectTemplate>sourceValueTemplates[0];
+        } else {
+            res.value.object = SOURCE_VALUE;
+        }
 
     } else if (source === null) {
         //an object can be null
@@ -163,7 +176,8 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
     return res;
 }
 
-/**@TODO  
+/**@TODO
  * keep a list of low level templeates (ones that have no nested objects)
  * keep template and stringified version
+ * do it in post processing
  */
