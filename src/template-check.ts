@@ -4,7 +4,7 @@ import { objectToTemplate } from "./object-to-template";
 import { matchNumber } from "./utilities";
 
 //compare source with object template properties and types
-export const objectTemplateSimilarity = exports.objectTemplateSimilarity = (source: IsJsonable<object | primitive>, objectTemplate: ObjectTemplate, counter = { match: 0, total: 0, missing: 0, extraneous: 0 })
+export const objectTemplateSimilarity = (source: IsJsonable<object | primitive>, objectTemplate: ObjectTemplate, counter = { match: 0, total: 0, missing: 0, extraneous: 0 })
     : { match: number, total: number, missing: number, extraneous: number } => {
 
     let sourceType: string = Array.isArray(source) ? "array" : typeof source;

@@ -1,3 +1,4 @@
+import { OBJECT_MAP_PROP } from "../src/interfaces";
 import { objectToTemplate } from "../src/object-to-template"
 import { objectTemplateSimilarity } from "../src/template-check";
 
@@ -115,10 +116,14 @@ describe("objectToTEmplate test", () => {
     expect(true).toBeTruthy();
   })
 
+  /**@TODO test extraneous count */
+
+
   it("recognize object map collection of equals object", () => {
 
     const res = objectToTemplate(objectMapTestSource);
     expect(res.value.isObjectMap).toBeTruthy();
+    expect(res.value.object[OBJECT_MAP_PROP]).toBeDefined();
   })
 
 })

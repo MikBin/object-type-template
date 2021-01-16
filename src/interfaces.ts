@@ -1,3 +1,4 @@
+
 export type Primitive = number | string | boolean;
 /**@TODO add type for PlainObject */
 
@@ -46,7 +47,6 @@ export type Serializable = SerializableScalar | SerializableObject | Serializabl
 
 
 //#5
-
 export type primitive = null
     | boolean
     | number
@@ -82,7 +82,6 @@ export type IsJsonable<T> =
     : never;
 
 
-//@TODO use StringTMap
 export type MapOfObjectTemplate = { [prop: string]: ObjectTemplate };
 
 /**@TODO add objectMap to represent a map of similar templates? 
@@ -102,6 +101,9 @@ export interface ObjectTemplate {
     types: string[];
     value: ValueTemplate;
     optional: boolean;
+    isLeaf?: boolean;
+    depth?: number;
+    name?: string;
 }
 
 export const OBJECT_MAP_PROP = "__ObjectMap";

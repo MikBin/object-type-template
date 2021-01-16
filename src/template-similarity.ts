@@ -37,9 +37,6 @@ export const templateSimilarity = (templateA: ObjectTemplate, templateB: ObjectT
     const bothObjectMap = templateA.value.isObjectMap && templateB.value.isObjectMap;
 
 
-    /**count keys of non object map and add to total */
-
-
     if (hasObject) {
         const objectA = <MapOfObjectTemplate>templateA.value.object;
         const objectB = <MapOfObjectTemplate>templateB.value.object;
