@@ -1,11 +1,31 @@
-import { ObjectTemplate, primitive } from "./interfaces";
+import { IPropsStats, MapOfObjectTemplate, ObjectTemplate, primitive, PropsType } from "./interfaces";
 
 export const rgNumber = new RegExp(/^[0-9.,]*$/);
+export const rgInteger = new RegExp(/^[0-9]*$/);
 export const rgLettersOnly = new RegExp(/'[A-ZÀ-ÚÄ-Ü\s]+'/);
 export const rgSpecialChars = new RegExp(/[^.,a-zA-Z0-9 \n\.]/);//excluded comma and dots
+export const rgLettersAndNumbers = new RegExp(/^[a-zA-Z0-9_.-]*$/);
 
+/**@TODO match currencies */
 export const matchNumber = (num: string): boolean => {
     return rgNumber.test(num);
+}
+
+export const matchInteger = (num: string): boolean => {
+    return rgInteger.test(num);
+}
+
+export const matchLettersOnly = (s: string): boolean => {
+    return rgLettersOnly.test(s);
+}
+
+export const matchLettersAndNumbers = (s: string): boolean => {
+    return rgLettersAndNumbers.test(s);
+}
+
+export const matchDate = (s: string) => {
+    const d = new Date(s);
+    return !isNaN(d.valueOf());
 }
 
 export const primitiveArrayUnion = (arr1: primitive[], arr2: primitive[]): primitive[] => {
@@ -60,4 +80,69 @@ export const entriesSorterFactory = (order: number = 1) => {
     return (A: [string, any], B: [string, any]): number => {
         return order * (A[0] >= B[0] ? 1 : -1);
     }
+}
+
+export const removeOptionalProps = (template: ObjectTemplate): ObjectTemplate | null => {
+    const templateCopy: ObjectTemplate = { ...template };
+    if (template.optional) return null;
+
+    if (templateCopy.types.includes('object')) {
+        const obj = { ...templateCopy.value.object };
+        templateCopy.value.object = obj;
+        Object.entries(<MapOfObjectTemplate>obj).forEach(([prop, val]) => {
+            const res = removeOptionalProps(val);
+            if (res) Reflect.set(obj, prop, res);
+            else Reflect.deleteProperty(obj, prop);
+        })
+    }
+
+    if (templateCopy.types.includes('array')) {
+        const res = removeOptionalProps(<ObjectTemplate>templateCopy.value.array);
+        templateCopy.value.array = res;
+    }
+    if (!!templateCopy.value.array && !!templateCopy.value.object && !!templateCopy.value.primitive) return null;
+    return templateCopy;
+}
+
+export const stringPropsStats = (props: string[]): IPropsStats => {
+
+    const res = { averageLength: 0, integers: 0, decimals: 0, numbers: 0, strings: 0, dates: 0, lettersAndNumbers: 0, letters: 0 };
+
+    props.forEach((p: string) => {
+        res.averageLength += p.length;
+
+        const negative = p.charAt(0) === '-' && p.length > 1;
+        const abs = negative ? p.substr(1, p.length) : p;
+
+        const isNumber = matchNumber(abs);
+        const isInteger = matchInteger(abs);
+        const isDecimal = isNumber && !isInteger;
+        if (isInteger) {
+            res.integers++;
+            res.numbers++;
+            //const parsedNum = parseInt(p); the check if are valid dates will be done in a second pass
+
+        } else if (isDecimal) {
+            res.decimals++;
+            res.numbers++;
+        } else if (matchLettersAndNumbers(p)) {
+            res.lettersAndNumbers++;
+        }
+        else if (matchLettersOnly(p)) {
+            res.letters++;
+        }
+
+        /**if its a number date it wont be a string valid date too */
+        if (matchDate(p)) {
+            res.dates++;
+        }
+    })
+
+    res.averageLength /= props.length;
+
+    return res;
+
+}
+export const guessPropListNameTypes = (props: string[]): PropsType => {
+    return 'number'
 }

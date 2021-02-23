@@ -1,6 +1,6 @@
 
 export type Primitive = number | string | boolean;
-/**@TODO add type for PlainObject */
+
 
 //#1
 export type JSONPrimitive = string | number | boolean | null;
@@ -106,11 +106,17 @@ export interface ObjectTemplate {
     name?: string;
 }
 
+export type PropsType = 'number' | 'string' | 'date';
+
 export const OBJECT_MAP_PROP = "__ObjectMap";
 
-/**
- * @TODO roadmap
- * clear code
- * create npm repo
- * make tests
- */
+export interface IPropsStats {
+    averageLength: number;
+    integers: number;
+    decimals: number;
+    numbers: number;
+    strings: number;
+    letters:number;
+    lettersAndNumbers:number;
+    dates: number;
+}; 

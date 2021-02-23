@@ -21,8 +21,6 @@ export const typesMatchCount = (typesA: string[], typesB: string[]): number => {
  * in case of object can be used to store a stringTMap type 
  */
 
-
-
 export const templateSimilarity = (templateA: ObjectTemplate, templateB: ObjectTemplate): { total: number, match: number } => {
 
     const counter = { total: Math.max(templateA.types.length, templateB.types.length), match: 0 };

@@ -65,7 +65,7 @@ describe("objectToTEmplate test", () => {
                     "value": {
                       "primitive": ["boolean", "number"],
                       "object": null,
-                       "array": null
+                      "array": null
                     },
                     "optional": false
                   },
@@ -123,7 +123,10 @@ describe("objectToTEmplate test", () => {
 
     const res = objectToTemplate(objectMapTestSource);
     expect(res.value.isObjectMap).toBeTruthy();
-    expect(res.value.object[OBJECT_MAP_PROP]).toBeDefined();
+    const objMap = res.value.object ? res.value.object[OBJECT_MAP_PROP] : undefined;
+    expect(objMap).toBeDefined();
+    console.log(JSON.stringify(objMap))
+    expect(objMap).toBeInstanceOf(Object);
   })
 
 })

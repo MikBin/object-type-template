@@ -150,6 +150,7 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
           */
 
         if (entries.length > threshold) {
+            /**@TODO make a function and a version  that excludes optional primitives */
             const sourceValueTemplates = Object.values(SOURCE_VALUE);
             const templateStrings: string[] = sourceValueTemplates.map(v => JSON.stringify(v)).sort();
             let l = templateStrings.length, equals = 0;
@@ -173,6 +174,7 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
         res.value.primitive = [_sourceType];
     }
     res.types.sort();
+    res.value.primitive?.sort();
     return res;
 }
 
