@@ -19,8 +19,9 @@ export const typesMatchCount = (typesA: string[], typesB: string[]): number => {
 
 /**when a series of templates are very similar then merge to get just one type
  * in case of object can be used to store a stringTMap type 
+ * @TODO ti not consider optional props make templates copy and remove optionals using routines
+ * to count match as weak if one is optional and not the other then modify the routine
  */
-
 export const templateSimilarity = (templateA: ObjectTemplate, templateB: ObjectTemplate): { total: number, match: number } => {
 
     const counter = { total: Math.max(templateA.types.length, templateB.types.length), match: 0 };

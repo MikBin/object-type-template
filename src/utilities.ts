@@ -104,6 +104,18 @@ export const removeOptionalProps = (template: ObjectTemplate): ObjectTemplate | 
     return templateCopy;
 }
 
+export const countTrueOptional = (template: ObjectTemplate | null, counter: number = 0): number => {
+    if (!template) return counter;
+    if (template.optional) counter++;
+    const arrayTemplate = template.value.array || null;
+    counter += countTrueOptional(<ObjectTemplate>arrayTemplate, 0);
+    const objectTemplate = template.value.object || {};
+    Object.values(objectTemplate).forEach((objTemp) => {
+        counter += countTrueOptional(<ObjectTemplate>objTemp, 0);
+    })
+    return counter;
+}
+
 export const stringPropsStats = (props: string[]): IPropsStats => {
 
     const res = { averageLength: 0, integers: 0, decimals: 0, numbers: 0, strings: 0, dates: 0, lettersAndNumbers: 0, letters: 0 };

@@ -104,7 +104,7 @@ export const mergeManyTemplates = (_templatesList: ObjectTemplate[]) => {
 }
 
 /**@TODO functions must be skipped or an error must be thrown same holds for Symbols
- * this situation should not accur as its supposted to receive json parsed data
+ * this situation should not accur as its supposed to receive json parsed data
  */
 
 /**
@@ -120,8 +120,8 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
     const sourceType: string = typeof source;
 
     if (Array.isArray(source)) {
-        /**SOURCE IS AN ARRAY */
 
+        /**SOURCE IS AN ARRAY */
         const templates = source.map((entry, idx) => {
             return objectToTemplate(entry);
         });
@@ -144,13 +144,12 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
             const propType = typeof propValue;
             Reflect.set(<MapOfObjectTemplate>SOURCE_VALUE, prop, objectToTemplate(propValue));
         });
+
         /**@TODO in object case check if all entries are similar --> in this case use stringTMap
          * the first check is on types, they have to be all primitive or array or object mixes in this case are not accepted
          * an exact match could be performed using JSON.stringify
           */
-
         if (entries.length > threshold) {
-            /**@TODO make a function and a version  that excludes optional primitives */
             const sourceValueTemplates = Object.values(SOURCE_VALUE);
             const templateStrings: string[] = sourceValueTemplates.map(v => JSON.stringify(v)).sort();
             let l = templateStrings.length, equals = 0;
@@ -158,6 +157,9 @@ export const objectToTemplate = (source: object | Primitive/** arrayTemplateMode
             const allEquals: boolean = equals === l - 1;
             res.value.isObjectMap = allEquals;
             res.value.object[OBJECT_MAP_PROP] = <ObjectTemplate>sourceValueTemplates[0];
+
+            /**consider relaxed equality (without optional) */
+            
         } else {
             res.value.object = SOURCE_VALUE;
         }
